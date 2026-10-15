@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { prisma, Pago, PagoProfesor } from '@/lib/prisma'
 
 export async function GET(request: Request) {
   try {
@@ -17,13 +17,13 @@ export async function GET(request: Request) {
       },
     })
 
-    const ingresos = pagos.reduce((acc: number, p) => acc + Number(p.monto), 0)
+    const ingresos = pagos.reduce((acc: number, p: Pago) => acc + Number(p.monto), 0)
 
     const pagosProfesores = await prisma.pagoProfesor.findMany({
       where: { mes, anio, estado: 'pagado' },
     })
 
-    const egresos = pagosProfesores.reduce((acc: number, p) => acc + Number(p.total), 0)
+    const egresos = pagosProfesores.reduce((acc: number, p: PagoProfesor) => acc + Number(p.total), 0)
 
     return NextResponse.json({
       mes,

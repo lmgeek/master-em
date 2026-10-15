@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Alumno {
+  id              Int       @id @default(autoincrement())
+  nombre          String
+  apellido        String
+  email           String    @unique
+  telefono        String?
+  instrumento     String?
+  nivel           String?
+  fechaInscripcion DateTime @default(now())
+  activo          Boolean   @default(true)
+  inscripciones   Inscripcion[]
+  pagos           Pago[]
+
+  @@map("alumnos")
+}
+
+model Profesor {
+  id               Int       @id @default(autoincrement())
+  nombre           String
+  apellido         String
+  email            String    @unique
+  telefono         String?
+  instrumento      String    // Canto, Guitarra, Bajo, Bateria, Piano, Ukelele
+  porcentajeComision Decimal @default(0) // porcentaje por alumno
+  activo           Boolean   @default(true)
+  clases           ClaseHorario[]
+  pagosProfesor    PagoProfesor[]
+
+  @@map("profesores")
+}
+
+model ClaseHorario {
+  id            Int       @id @default(autoincrement())
+  profesorId    Int
+  profesor      Profesor   @relation(fields: [profesorId], references: [id])
+  instrumento   String
+  diaSemana     String     // lunes, martes, miercoles, jueves, viernes, sabado
+  horaInicio    String     // "09:00"
+  horaFin       String     // "10:00"
+  aula          String?
+  capacidad     Int        @default(1)
+  activo        Boolean    @default(true)
+  inscripciones Inscripcion[]
+  asistencias   Asistencia[]
+
+  @@map("clases_horarios")
+}
+
+model Inscripcion {
+  id             Int      @id @default(autoincrement())
+  alumnoId       Int
+  alumno         Alumno    @relation(fields: [alumnoId], references: [id])
+  claseHorarioId Int
+  claseHorario   ClaseHorario @relation(fields: [claseHorarioId], references: [id])
+  fechaInscripcion DateTime @default(now())
+  mensualidad    Decimal   @default(0)
+  activo         Boolean   @default(true)
+  pagos          Pago[]
+  asistencias    Asistencia[]
+
+  @@map("inscripciones")
+}
+
+model Pago {
+  id              Int       @id @default(autoincrement())
+  alumnoId        Int
+  alumno          Alumno     @relation(fields: [alumnoId], references: [id])
+  inscripcionId   Int?
+  inscripcion     Inscripcion? @relation(fields: [inscripcionId], references: [id])
+  concepto        String
+  monto           Decimal
+  fecha           DateTime  @default(now())
+  metodoPago      String    // efectivo, transferencia, tarjeta
+  comprobanteUrl  String?
+  estado          String    @default("pendiente") // pendiente, pagado, anulado
+  numeroComprobante String?
+
+  @@map("pagos")
+}
+
+model Asistencia {
+  id             Int      @id @default(autoincrement())
+  inscripcionId  Int
+  inscripcion    Inscripcion @relation(fields: [inscripcionId], references: [id])
+  claseHorarioId Int
+  claseHorario   ClaseHorario @relation(fields: [claseHorarioId], references: [id])
+  fecha          DateTime  @default(now())
+  presente       Boolean   @default(true)
+  observaciones  String?
+
+  @@map("asistencias")
+}
+
+model PagoProfesor {
+  id             Int      @id @default(autoincrement())
+  profesorId     Int
+  profesor       Profesor  @relation(fields: [profesorId], references: [id])
+  mes            Int
+  anio           Int
+  cantidadAlumnos Int
+  montoBase      Decimal
+  comision       Decimal
+  total          Decimal
+  fechaPago      DateTime?
+  estado         String    @default("pendiente") // pendiente, pagado
+
+  @@map("pagos_profesores")
+}
+
+model Configuracion {
+  id    Int    @id @default(autoincrement())
+  clave String @unique
+  valor String
+
+  @@map("configuracion")
+}
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  email     String   @unique
+  password  String
+  rol       String   @default("ADMIN")
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("usuarios")
+}

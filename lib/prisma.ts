@@ -1,6 +1,4 @@
-import { PrismaClient, Pago, PagoProfesor, Alumno, Profesor, ClaseHorario, Inscripcion, Asistencia, Configuracion, Usuario } from '@prisma/client'
-
-export type { Pago, PagoProfesor, Alumno, Profesor, ClaseHorario, Inscripcion, Asistencia, Configuracion, Usuario }
+import { PrismaClient } from '@prisma/client'
 
 // ⚠️ FALLBACK DIRECTO: Si la variable de entorno no está configurada,
 // se usan los datos de conexión de Supabase directamente.

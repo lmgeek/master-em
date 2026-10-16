@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { LogOut, User } from 'lucide-react'
 import { cookies } from 'next/headers'
 import { verify } from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
+import LogoutButton from '@/components/LogoutButton'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -77,16 +77,7 @@ export default async function RootLayout({
                 {usuario ? (
                   <div className="flex items-center gap-2 ml-4">
                     <div className="text-sm text-gray-700">{usuario.nombre}</div>
-                    <button
-                      onClick={() => {
-                        fetch('/api/auth/logout', { method: 'POST' }).then(() => {
-                          window.location.href = '/login'
-                        })
-                      }}
-                      className="text-sm text-red-600 hover:text-red-800 flex items-center gap-1"
-                    >
-                      <LogOut size={16} /> Salir
-                    </button>
+                    <LogoutButton />
                   </div>
                 ) : (
                   <a href="/login" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">

@@ -162,23 +162,30 @@ export default function AlumnosPage() {
                   className="input-field"
                   value={form.telefono}
                   onChange={(e) => setForm({ ...form, telefono: e.target.value })}
+                  required
                 />
               </div>
               <div>
                 <label className="field-label">Instrumento</label>
-                <input
-                  className="input-field"
-                  value={form.instrumento}
-                  onChange={(e) => setForm({ ...form, instrumento: e.target.value })}
-                />
+                <select className="select-field" value={form.instrumento} onChange={(e) => setForm({ ...form, instrumento: e.target.value })}>
+                  <option value="">Seleccionar instrumento</option>
+                  <option value="Canto">Canto</option>
+                  <option value="Guitarra">Guitarra</option>
+                  <option value="Bajo">Bajo</option>
+                  <option value="Batería">Batería</option>
+                  <option value="Piano">Piano</option>
+                  <option value="Ukelele">Ukelele</option>
+                </select>
               </div>
               <div>
                 <label className="field-label">Nivel</label>
-                <input
-                  className="input-field"
-                  value={form.nivel}
-                  onChange={(e) => setForm({ ...form, nivel: e.target.value })}
-                />
+                <select className="select-field" value={form.nivel} onChange={(e) => setForm({ ...form, nivel: e.target.value })}>
+                  <option value="">Seleccionar nivel</option>
+                  <option value="Ninguno">Ninguno</option>
+                  <option value="Básico">Básico</option>
+                  <option value="Intermedio">Intermedio</option>
+                  <option value="Avanzado">Avanzado</option>
+                </select>
               </div>
               <div className="flex justify-end gap-3 pt-3 border-t border-[#E5E7EB]">
                 <button

@@ -155,7 +155,6 @@ export default function ProfesoresPage() {
                   className="input-field"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  required
                 />
               </div>
               <div>
@@ -164,6 +163,7 @@ export default function ProfesoresPage() {
                   className="input-field"
                   value={form.telefono}
                   onChange={(e) => setForm({ ...form, telefono: e.target.value })}
+                  required
                 />
               </div>
               <div>

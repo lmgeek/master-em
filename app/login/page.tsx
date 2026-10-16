@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Mail, Lock, AlertTriangle } from 'lucide-react'
+import { Mail, Lock } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -40,28 +40,27 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Iniciar sesión</h1>
-          <p className="text-gray-600 text-sm">Sistema de Facturación - Escuela de Música</p>
+    <div className="min-h-screen flex items-center justify-center bg-[#F4F7FB] px-4">
+      <div className="bg-white border border-[#E5E7EB] rounded-2xl shadow-xl w-full max-w-md p-8">
+        <div className="mb-8 text-center">
+          <span className="serif text-2xl font-bold text-[#111827] block">Escuela de Música</span>
+          <p className="mt-1 text-xs text-[#6B7280] tracking-wider uppercase">Sistema de administración y facturación</p>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded text-sm flex items-center gap-2">
-            <AlertTriangle size={16} />
-            {error}
+          <div className="mb-5 p-3 rounded-lg bg-[#FEF2F2] border border-[#FECACA] text-[#991B1B] text-sm flex items-center gap-2">
+            <span>⚠</span> {error}
           </div>
         )}
 
         <form onSubmit={manejarLogin} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="field-label">Correo electrónico</label>
             <div className="relative">
-              <Mail size={18} className="absolute left-3 top-3 text-gray-400" />
+              <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
               <input
                 type="email"
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+                className="input-field pl-9"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@escuela.com"
@@ -71,12 +70,12 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+            <label className="field-label">Contraseña</label>
             <div className="relative">
-              <Lock size={18} className="absolute left-3 top-3 text-gray-400" />
+              <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
               <input
                 type="password"
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+                className="input-field pl-9"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -87,13 +86,14 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={cargando}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white py-2 rounded-lg text-sm font-medium transition"
+            className="btn-primary w-full"
           >
             {cargando ? 'Ingresando...' : 'Iniciar sesión'}
           </button>
 
-          <p className="text-center text-sm text-gray-600 mt-4">
-            ¿No tienes cuenta? <a href="/registro" className="text-blue-600 hover:underline">Regístrate</a>
+          <p className="text-center text-sm text-[#6B7280] mt-6">
+            ¿No tienes cuenta?{' '}
+            <a href="/registro" className="text-[#7C3AED] hover:text-[#6D28D9] underline underline-offset-2">Regístrate</a>
           </p>
         </form>
       </div>

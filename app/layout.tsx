@@ -42,8 +42,8 @@ async function obtenerUsuario(): Promise<Usuario | null> {
 }
 
 export const metadata: Metadata = {
-  title: 'Escuela de Música - Sistema de Facturación',
-  description: 'ABM de alumnos, profesores, horarios, pagos y reportes.',
+  title: 'Escuela de Música - Sistema de Administración',
+  description: 'Alumnos, profesores, horarios, pagos y reportes.',
 }
 
 export default async function RootLayout({
@@ -58,7 +58,7 @@ export default async function RootLayout({
       <body className={inter.className}>
         <Sidebar />
         <TopBar usuario={usuario} />
-        <main className="lg:ml-64 pt-6 pb-12 px-6 sm:px-8 lg:px-12 max-w-6xl mx-auto">
+        <main className="lg:ml-64 pt-4 pb-8 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
           {children}
         </main>
       </body>

@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Plus, Edit, Trash2, Filter } from 'lucide-react'
 
 interface Clase {
   id: number
@@ -15,18 +14,23 @@ interface Clase {
   activo: boolean
 }
 
+interface Profesor {
+  id: number
+  nombre: string
+  apellido: string
+}
+
 const DIAS = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado']
 
 export default function HorariosPage() {
   const [clases, setClases] = useState<Clase[]>([])
-  const [profesores, setProfesores] = useState<any[]>([])
+  const [profesores, setProfesores] = useState<Profesor[]>([])
   const [filtroProfesor, setFiltroProfesor] = useState<string>('')
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState({
     profesorId: '', instrumento: '', diaSemana: 'lunes', horaInicio: '09:00', horaFin: '10:00', aula: '', capacidad: '1',
   })
   const [editingId, setEditingId] = useState<number | null>(null)
-  const [view, setView] = useState<'lista' | 'plancha'>('lista')
 
   useEffect(() => {
     fetch('/api/clases').then((r) => r.json()).then(setClases)
@@ -62,7 +66,6 @@ export default function HorariosPage() {
     fetch('/api/clases').then((r) => r.json()).then(setClases)
   }
 
-  // Plancha horaria: filas = horas, columnas = días
   const horas = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00']
 
   const getClaseEnCelda = (dia: string, hora: string) => {
@@ -70,137 +73,121 @@ export default function HorariosPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto py-6 px-4">
-      <div className="flex justify-between items-center mb-6">
+    <div className="space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Horarios y Plancha Horaria</h1>
-          <p className="text-gray-600 text-sm">Organización de clases por profesor y día.</p>
+          <h1 className="serif text-2xl font-bold text-[#111827]">Plancha horaria</h1>
+          <p className="mt-1 text-[#6B7280] text-sm">Organización de clases por profesor y día de la semana.</p>
         </div>
-        <div className="flex gap-2">
-          <button onClick={() => setView('lista')} className={`px-4 py-2 rounded text-sm font-medium transition ${view === 'lista' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>Lista</button>
-          <button onClick={() => setView('plancha')} className={`px-4 py-2 rounded text-sm font-medium transition ${view === 'plancha' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>Plancha</button>
-          <button onClick={() => { setForm({ profesorId: '', instrumento: '', diaSemana: 'lunes', horaInicio: '09:00', horaFin: '10:00', aula: '', capacidad: '1' }); setEditingId(null); setOpen(true) }} className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium">
-            <Plus size={18} /> Nueva clase
-          </button>
-        </div>
+        <button
+          onClick={() => { setForm({ profesorId: '', instrumento: '', diaSemana: 'lunes', horaInicio: '09:00', horaFin: '10:00', aula: '', capacidad: '1' }); setEditingId(null); setOpen(true) }}
+          className="btn-primary"
+        >
+          Nueva clase
+        </button>
       </div>
 
-      <div className="flex gap-4 mb-6">
-        <select value={filtroProfesor} onChange={(e) => setFiltroProfesor(e.target.value)} className="border rounded px-3 py-2 text-sm">
+      <div className="flex gap-3">
+        <select
+          value={filtroProfesor}
+          onChange={(e) => setFiltroProfesor(e.target.value)}
+          className="select-field w-auto max-w-[200px]"
+        >
           <option value="">Todos los profesores</option>
           {profesores.map((p) => <option key={p.id} value={String(p.id)}>{p.nombre} {p.apellido}</option>)}
         </select>
       </div>
 
-      {view === 'lista' ? (
-        <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+      <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="data-table">
+            <thead className="sticky top-0 z-10">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Profesor</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Instrumento</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Día</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Horario</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aula</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                <th className="w-20">Hora</th>
+                {DIAS.map((dia) => (
+                  <th key={dia} className="text-center" style={{ width: 'calc((100% - 80px) / 6)' }}>
+                    {dia.charAt(0).toUpperCase() + dia.slice(1)}
+                  </th>
+                ))}
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {clasesFiltradas.map((c) => (
-                <tr key={c.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">{c.profesor.nombre} {c.profesor.apellido}</td>
-                  <td className="px-6 py-4 whitespace-nowrap capitalize">{c.instrumento}</td>
-                  <td className="px-6 py-4 whitespace-nowrap capitalize">{c.diaSemana}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{c.horaInicio} - {c.horaFin}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{c.aula || '-'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                    <button onClick={() => editar(c)} className="text-purple-600 hover:text-purple-800"><Edit size={16} /></button>
-                    <button onClick={() => eliminar(c.id)} className="text-red-600 hover:text-red-800"><Trash2 size={16} /></button>
-                  </td>
+            <tbody>
+              {horas.map((hora) => (
+                <tr key={hora}>
+                  <td className="text-xs font-medium text-[#6B7280] bg-[#F9FAFB]">{hora}</td>
+                  {DIAS.map((dia) => {
+                    const c = getClaseEnCelda(dia, hora)
+                    return (
+                      <td key={dia} className="text-center h-20 relative p-1" style={{ border: '1px solid #E5E7EB' }}>
+                        {c ? (
+                          <div className="bg-[#7C3AED]/10 border border-[#7C3AED]/30 rounded p-1 text-[10px] font-medium text-[#7C3AED] leading-tight">
+                            {c.profesor.apellido} - {c.instrumento}
+                          </div>
+                        ) : null}
+                      </td>
+                    )
+                  })}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      ) : (
-        <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 divide-x divide-gray-200">
-              <thead className="bg-gray-100 sticky top-0">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hora</th>
-                  {DIAS.map((dia) => (
-                    <th key={dia} className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">{dia.charAt(0).toUpperCase() + dia.slice(1)}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {horas.map((hora) => (
-                  <tr key={hora} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-left text-xs font-medium text-gray-600">{hora}</td>
-                    {DIAS.map((dia) => {
-                      const c = getClaseEnCelda(dia, hora)
-                      return (
-                        <td key={dia} className="px-6 py-4 text-center h-24 relative">
-                          {c ? (
-                            <div className="bg-purple-100 border border-purple-300 rounded p-1 text-[10px] font-medium text-purple-800 leading-tight">
-                              {c.profesor.apellido} - {c.instrumento}
-                            </div>
-                          ) : null}
-                        </td>
-                      )
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      </div>
 
       {open && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" onClick={() => setOpen(false)}>
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 mx-4" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-bold mb-4">{editingId ? 'Editar' : 'Nueva'} Clase</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setOpen(false)} />
+          <div className="relative bg-white p-6 rounded-2xl shadow-2xl border border-[#E5E7EB] w-full max-w-md m-4" onClick={(e) => e.stopPropagation()}>
+            <h2 className="serif text-xl font-bold text-[#111827] mb-5">
+              {editingId ? 'Editar clase' : 'Nueva clase'}
+            </h2>
             <form onSubmit={guardar} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Profesor</label>
-                <select className="w-full border rounded px-3 py-2 text-sm" value={form.profesorId} onChange={(e) => setForm({ ...form, profesorId: e.target.value })}>
+                <label className="field-label">Profesor</label>
+                <select
+                  className="select-field"
+                  value={form.profesorId}
+                  onChange={(e) => setForm({ ...form, profesorId: e.target.value })}
+                >
                   <option value="">Seleccionar profesor</option>
                   {profesores.map((p) => <option key={p.id} value={String(p.id)}>{p.nombre} {p.apellido}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Instrumento</label>
-                <input className="w-full border rounded px-3 py-2 text-sm" value={form.instrumento} onChange={(e) => setForm({ ...form, instrumento: e.target.value })} required />
+                <label className="field-label">Instrumento</label>
+                <input className="input-field" value={form.instrumento} onChange={(e) => setForm({ ...form, instrumento: e.target.value })} required />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Día</label>
-                <select className="w-full border rounded px-3 py-2 text-sm" value={form.diaSemana} onChange={(e) => setForm({ ...form, diaSemana: e.target.value })}>
+                <label className="field-label">Día</label>
+                <select className="select-field" value={form.diaSemana} onChange={(e) => setForm({ ...form, diaSemana: e.target.value })}>
                   {DIAS.map((d) => <option key={d} value={d}>{d.charAt(0).toUpperCase() + d.slice(1)}</option>)}
                 </select>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Hora inicio</label>
-                  <input type="time" className="w-full border rounded px-3 py-2 text-sm" value={form.horaInicio} onChange={(e) => setForm({ ...form, horaInicio: e.target.value })} required />
+                  <label className="field-label">Hora inicio</label>
+                  <input type="time" className="input-field" value={form.horaInicio} onChange={(e) => setForm({ ...form, horaInicio: e.target.value })} required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Hora fin</label>
-                  <input type="time" className="w-full border rounded px-3 py-2 text-sm" value={form.horaFin} onChange={(e) => setForm({ ...form, horaFin: e.target.value })} required />
+                  <label className="field-label">Hora fin</label>
+                  <input type="time" className="input-field" value={form.horaFin} onChange={(e) => setForm({ ...form, horaFin: e.target.value })} required />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Aula</label>
-                <input className="w-full border rounded px-3 py-2 text-sm" value={form.aula} onChange={(e) => setForm({ ...form, aula: e.target.value })} />
+                <label className="field-label">Aula</label>
+                <input className="input-field" value={form.aula} onChange={(e) => setForm({ ...form, aula: e.target.value })} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Capacidad</label>
-                <input type="number" className="w-full border rounded px-3 py-2 text-sm" value={form.capacidad} onChange={(e) => setForm({ ...form, capacidad: e.target.value })} />
+                <label className="field-label">Capacidad</label>
+                <input type="number" className="input-field" value={form.capacidad} onChange={(e) => setForm({ ...form, capacidad: e.target.value })} />
               </div>
-              <div className="flex justify-end gap-2 pt-4">
-                <button type="button" onClick={() => setOpen(false)} className="px-4 py-2 border rounded text-gray-700 hover:bg-gray-100 text-sm">Cancelar</button>
-                <button type="submit" className="px-4 py-2 bg-purple-600 text-white rounded text-sm hover:bg-purple-700">Guardar</button>
+              <div className="flex justify-end gap-3 pt-3 border-t border-[#E5E7EB]">
+                <button type="button" onClick={() => setOpen(false)} className="btn-secondary btn-sm">
+                  Cancelar
+                </button>
+                <button type="submit" className="btn-primary btn-sm">
+                  Guardar
+                </button>
               </div>
             </form>
           </div>

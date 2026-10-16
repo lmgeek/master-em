@@ -21,27 +21,34 @@ export default function TopBar({ usuario }: TopBarProps) {
   }
 
   return (
-    <header className="lg:ml-64 border-b border-[#CBD5E1] bg-white sticky top-0 z-20">
-      <div className="flex items-center justify-between px-6 py-4">
+    <header className="lg:ml-56 border-b border-[#22632340] bg-white sticky top-0 z-20">
+      <div className="flex items-center justify-between px-5 py-3">
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-semibold text-[#64748B] tracking-wider uppercase">
+            Escuela de Música
+          </span>
+        </div>
+
         {usuario ? (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <div className="hidden sm:flex flex-col">
-              <span className="text-sm font-medium text-[#0F172A]">{usuario.nombre}</span>
-              <span className="text-xs text-[#64748B]">{usuario.email}</span>
+              <span className="text-sm font-medium text-[#111827]">{usuario.nombre}</span>
+              <span className="text-[11px] text-[#94A3B8]">{usuario.email}</span>
             </div>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 text-sm font-medium text-[#DC2626] hover:text-[#B91C1C] transition-colors"
+              className="flex items-center gap-1.5 text-sm font-medium text-[#DC2626] hover:text-[#B91C1C] transition-colors px-2 py-1.5 rounded-md hover:bg-[#FEF2F2]"
             >
-              <LogOut size={16} /> Cerrar sesión
+              <LogOut size={14} />
+              <span>Cerrar sesión</span>
             </button>
           </div>
         ) : (
           <a
             href="/login"
-            className="flex items-center gap-2 px-4 py-2 bg-[#D97706] text-white rounded-lg text-sm font-medium hover:bg-[#B45309] transition-colors"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#7C3AED] text-white rounded-md text-sm font-medium hover:bg-[#6D28D9] transition-colors"
           >
-            Iniciar sesión
+            <span>Iniciar sesión</span>
           </a>
         )}
       </div>

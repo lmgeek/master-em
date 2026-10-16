@@ -59,11 +59,11 @@ export default function ProfesoresPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+    <div className="space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
-          <h1 className="serif text-3xl font-semibold text-[#0F172A]">Profesores</h1>
-          <p className="mt-2 text-[#64748B]">Registro de profesores por instrumento y su porcentaje de comisión por alumno.</p>
+          <h1 className="serif text-2xl font-bold text-[#111827]">Profesores</h1>
+          <p className="mt-1 text-[#6B7280] text-sm">Registro de profesores por instrumento y porcentaje de comisión por alumno.</p>
         </div>
         <button
           onClick={() => {
@@ -77,7 +77,7 @@ export default function ProfesoresPage() {
         </button>
       </div>
 
-      <div className="bg-white border border-[#CBD5E1] rounded-xl overflow-hidden">
+      <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden shadow-sm">
         <table className="data-table">
           <thead>
             <tr>
@@ -85,7 +85,7 @@ export default function ProfesoresPage() {
               <th>Instrumento</th>
               <th style={{ textAlign: 'right' }}>Comisión</th>
               <th>Email</th>
-              <th style={{ textAlign: 'right' }}>Acciones</th>
+              <th style={{ textAlign: 'right', width: '120px' }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -95,16 +95,16 @@ export default function ProfesoresPage() {
                 <td>{p.instrumento}</td>
                 <td style={{ textAlign: 'right' }}>{p.porcentajeComision}%</td>
                 <td>{p.email}</td>
-                <td style={{ textAlign: 'right' }} className="space-x-2">
+                <td style={{ textAlign: 'right' }} className="space-x-1">
                   <button
                     onClick={() => editar(p)}
-                    className="text-sm font-medium text-[#0F172A] underline underline-offset-2 hover:text-[#D97706]"
+                    className="text-xs font-medium text-[#7C3AED] hover:text-[#6D28D9] underline underline-offset-2"
                   >
                     Editar
                   </button>
                   <button
                     onClick={() => eliminar(p.id)}
-                    className="text-sm font-medium text-[#DC2626] underline underline-offset-2 hover:text-[#B91C1C]"
+                    className="text-xs font-medium text-[#DC2626] hover:text-[#B91C1C] underline underline-offset-2"
                   >
                     Desactivar
                   </button>
@@ -113,7 +113,7 @@ export default function ProfesoresPage() {
             ))}
             {profesores.length === 0 && (
               <tr>
-                <td colSpan={5} className="text-center py-8 text-[#64748B]">
+                <td colSpan={5} className="text-center py-10 text-[#94A3B8]">
                   No hay profesores registrados todavía.
                 </td>
               </tr>
@@ -124,52 +124,52 @@ export default function ProfesoresPage() {
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <div className="relative bg-white p-6 rounded-xl shadow-2xl border border-[#CBD5E1] w-full max-w-md m-4" onClick={(e) => e.stopPropagation()}>
-            <h2 className="serif text-xl font-semibold text-[#0F172A] mb-4">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setOpen(false)} />
+          <div className="relative bg-white p-6 rounded-2xl shadow-2xl border border-[#E5E7EB] w-full max-w-md m-4" onClick={(e) => e.stopPropagation()}>
+            <h2 className="serif text-xl font-bold text-[#111827] mb-5">
               {editingId ? 'Editar profesor' : 'Nuevo profesor'}
             </h2>
             <form onSubmit={guardar} className="space-y-4">
               <div>
-                <label className="label">Nombre</label>
+                <label className="field-label">Nombre</label>
                 <input
-                  className="w-full border border-[#CBD5E1] rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus-ring-[#D97706]"
+                  className="input-field"
                   value={form.nombre}
                   onChange={(e) => setForm({ ...form, nombre: e.target.value })}
                   required
                 />
               </div>
               <div>
-                <label className="label">Apellido</label>
+                <label className="field-label">Apellido</label>
                 <input
-                  className="w-full border border-[#CBD5E1] rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus-ring-[#D97706]"
+                  className="input-field"
                   value={form.apellido}
                   onChange={(e) => setForm({ ...form, apellido: e.target.value })}
                   required
                 />
               </div>
               <div>
-                <label className="label">Email</label>
+                <label className="field-label">Email</label>
                 <input
                   type="email"
-                  className="w-full border border-[#CBD5E1] rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus-ring-[#D97706]"
+                  className="input-field"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   required
                 />
               </div>
               <div>
-                <label className="label">Teléfono</label>
+                <label className="field-label">Teléfono</label>
                 <input
-                  className="w-full border border-[#CBD5E1] rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus-ring-[#D97706]"
+                  className="input-field"
                   value={form.telefono}
                   onChange={(e) => setForm({ ...form, telefono: e.target.value })}
                 />
               </div>
               <div>
-                <label className="label">Instrumento</label>
+                <label className="field-label">Instrumento</label>
                 <select
-                  className="w-full border border-[#CBD5E1] rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus-ring-[#D97706]"
+                  className="select-field"
                   value={form.instrumento}
                   onChange={(e) => setForm({ ...form, instrumento: e.target.value })}
                 >
@@ -177,23 +177,23 @@ export default function ProfesoresPage() {
                 </select>
               </div>
               <div>
-                <label className="label">Comisión por alumno (%)</label>
+                <label className="field-label">Comisión por alumno (%)</label>
                 <input
                   type="number"
-                  className="w-full border border-[#CBD5E1] rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus-ring-[#D97706]"
+                  className="input-field"
                   value={form.porcentajeComision}
                   onChange={(e) => setForm({ ...form, porcentajeComision: e.target.value })}
                 />
               </div>
-              <div className="flex justify-end gap-3 pt-4">
+              <div className="flex justify-end gap-3 pt-3 border-t border-[#E5E7EB]">
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="btn-ghost"
+                  className="btn-secondary btn-sm"
                 >
                   Cancelar
                 </button>
-                <button type="submit" className="btn-primary">
+                <button type="submit" className="btn-primary btn-sm">
                   Guardar
                 </button>
               </div>

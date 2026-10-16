@@ -56,11 +56,15 @@ export default async function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
-        <Sidebar />
-        <TopBar usuario={usuario} />
-        <main className="lg:ml-64 pt-4 pb-8 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-          {children}
-        </main>
+        <div className="flex flex-col h-full">
+          <Sidebar />
+          <div className="flex-1 flex flex-col min-h-0">
+            <TopBar usuario={usuario} />
+            <main className="flex-1 pt-1 pb-8 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto overflow-y-auto">
+              {children}
+            </main>
+          </div>
+        </div>
       </body>
     </html>
   )

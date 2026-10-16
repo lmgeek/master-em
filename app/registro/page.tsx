@@ -41,15 +41,18 @@ export default function RegistroPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F4F7FB] px-4">
-      <div className="bg-white border border-[#E5E7EB] rounded-2xl shadow-xl w-full max-w-md p-8">
+    <div className="min-h-screen flex items-center justify-center bg-body px-4">
+      <div className="bg-surface border border-line rounded-[2rem] shadow-lg w-full max-w-md p-8 sm:p-10">
         <div className="mb-8 text-center">
-          <span className="serif text-2xl font-bold text-[#111827] block">Escuela de Música</span>
-          <p className="mt-1 text-xs text-[#6B7280] tracking-wider uppercase">Crear cuenta de administrador</p>
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-accent-soft text-accent-text font-semibold mb-3 mx-auto">
+            🎓
+          </div>
+          <span className="text-xl font-bold tracking-tight text-ink block">Escuela de Música</span>
+          <p className="mt-1 text-xs text-muted tracking-wider uppercase">Crear cuenta de administrador</p>
         </div>
 
         {error && (
-          <div className="mb-5 p-3 rounded-lg bg-[#FEF2F2] border border-[#FECACA] text-[#991B1B] text-sm flex items-center gap-2">
+          <div className="mb-5 p-3 rounded-lg bg-danger-soft border border-line text-danger text-sm flex items-center gap-2">
             <span>⚠</span> {error}
           </div>
         )}
@@ -58,7 +61,7 @@ export default function RegistroPage() {
           <div>
             <label className="field-label">Nombre completo</label>
             <div className="relative">
-              <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
+              <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
               <input
                 type="text"
                 className="input-field pl-9"
@@ -73,7 +76,7 @@ export default function RegistroPage() {
           <div>
             <label className="field-label">Correo electrónico</label>
             <div className="relative">
-              <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
+              <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
               <input
                 type="email"
                 className="input-field pl-9"
@@ -88,7 +91,7 @@ export default function RegistroPage() {
           <div>
             <label className="field-label">Contraseña</label>
             <div className="relative">
-              <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
+              <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
               <input
                 type="password"
                 className="input-field pl-9"
@@ -104,12 +107,12 @@ export default function RegistroPage() {
             disabled={cargando}
             className="btn-primary w-full"
           >
-            {cargando ? 'Creando cuenta...' : 'Crear cuenta'}
+            {cargando ? 'Creando cuenta…' : 'Crear cuenta'}
           </button>
 
-          <p className="text-center text-sm text-[#6B7280] mt-6">
+          <p className="text-center text-sm text-muted mt-6">
             ¿Ya tienes cuenta?{' '}
-            <a href="/login" className="text-[#7C3AED] hover:text-[#6D28D9] underline underline-offset-2">Inicia sesión</a>
+            <a href="/login" className="text-accent hover:text-accent-text underline underline-offset-2">Inicia sesión</a>
           </p>
         </form>
       </div>

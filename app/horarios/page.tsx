@@ -31,16 +31,19 @@ export default function HorariosPage() {
     profesorId: '', instrumento: '', diaSemana: 'lunes', horaInicio: '09:00', horaFin: '10:00', aula: '', capacidad: '1',
   })
   const [editingId, setEditingId] = useState<number | null>(null)
+  const [cargando, setCargando] = useState(false)
 
   useEffect(() => {
+    setCargando(true)
     fetch('/api/clases').then((r) => r.json()).then(setClases)
-    fetch('/api/profesores').then((r) => r.json()).then(setProfesores)
+    fetch('/api/profesores').then((r) => r.json()).then(setProfesores).finally(() => setCargando(false))
   }, [])
 
   const clasesFiltradas = clases.filter((c) => !filtroProfesor || c.profesor.id === Number(filtroProfesor))
 
   const guardar = async (e: React.FormEvent) => {
     e.preventDefault()
+    setCargando(true)
     const url = editingId ? `/api/clases/${editingId}` : '/api/clases'
     const method = editingId ? 'PUT' : 'POST'
     await fetch(url, {
@@ -51,6 +54,7 @@ export default function HorariosPage() {
     setForm({ profesorId: '', instrumento: '', diaSemana: 'lunes', horaInicio: '09:00', horaFin: '10:00', aula: '', capacidad: '1' })
     setOpen(false)
     setEditingId(null)
+    setCargando(false)
     fetch('/api/clases').then((r) => r.json()).then(setClases)
   }
 
@@ -62,7 +66,9 @@ export default function HorariosPage() {
 
   const eliminar = async (id: number) => {
     if (!confirm('¿Desactivar esta clase?')) return
+    setCargando(true)
     await fetch(`/api/clases/${id}`, { method: 'DELETE' })
+    setCargando(false)
     fetch('/api/clases').then((r) => r.json()).then(setClases)
   }
 
@@ -72,16 +78,19 @@ export default function HorariosPage() {
     return clasesFiltradas.find((c) => c.diaSemana === dia && c.horaInicio === hora)
   }
 
+  const tieneClases = clasesFiltradas.length > 0
+
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
-          <h1 className="serif text-2xl font-bold text-[#111827]">Plancha horaria</h1>
-          <p className="mt-1 text-[#6B7280] text-sm">Organización de clases por profesor y día de la semana.</p>
+          <h1 className="text-xl font-bold tracking-tight">Plancha horaria</h1>
+          <p className="mt-1 text-sm text-muted">Organización de clases por profesor y día de la semana.</p>
         </div>
         <button
           onClick={() => { setForm({ profesorId: '', instrumento: '', diaSemana: 'lunes', horaInicio: '09:00', horaFin: '10:00', aula: '', capacidad: '1' }); setEditingId(null); setOpen(true) }}
           className="btn-primary"
+          disabled={cargando}
         >
           Nueva clase
         </button>
@@ -91,105 +100,134 @@ export default function HorariosPage() {
         <select
           value={filtroProfesor}
           onChange={(e) => setFiltroProfesor(e.target.value)}
-          className="select-field w-auto max-w-[200px]"
+          className="select-field w-auto max-w-[220px]"
         >
           <option value="">Todos los profesores</option>
           {profesores.map((p) => <option key={p.id} value={String(p.id)}>{p.nombre} {p.apellido}</option>)}
         </select>
       </div>
 
-      <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="data-table">
-            <thead className="sticky top-0 z-10">
-              <tr>
-                <th className="w-20">Hora</th>
-                {DIAS.map((dia) => (
-                  <th key={dia} className="text-center" style={{ width: 'calc((100% - 80px) / 6)' }}>
-                    {dia.charAt(0).toUpperCase() + dia.slice(1)}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {horas.map((hora) => (
-                <tr key={hora}>
-                  <td className="text-xs font-medium text-[#6B7280] bg-[#F9FAFB]">{hora}</td>
-                  {DIAS.map((dia) => {
-                    const c = getClaseEnCelda(dia, hora)
-                    return (
-                      <td key={dia} className="text-center h-20 relative p-1" style={{ border: '1px solid #E5E7EB' }}>
-                        {c ? (
-                          <div className="bg-[#7C3AED]/10 border border-[#7C3AED]/30 rounded p-1 text-[10px] font-medium text-[#7C3AED] leading-tight">
-                            {c.profesor.apellido} - {c.instrumento}
-                          </div>
-                        ) : null}
-                      </td>
-                    )
-                  })}
+      <div className="card overflow-hidden">
+        {cargando ? (
+          <div className="p-8 text-center">
+            <div className="skeleton w-48 h-8 mx-auto mb-3" />
+            <div className="skeleton w-32 h-5 mx-auto" />
+            <p className="mt-3 text-[11px] text-muted">Cargando clases…</p>
+          </div>
+        ) : !tieneClases ? (
+          <div className="empty-state py-10">
+            <div className="empty-icon">📅</div>
+            <h3>No hay clases programadas todavía</h3>
+            <p>Crea tu primera clase y verás la plancha completarse automáticamente.</p>
+            <button
+              onClick={() => { setForm({ profesorId: '', instrumento: '', diaSemana: 'lunes', horaInicio: '09:00', horaFin: '10:00', aula: '', capacidad: '1' }); setEditingId(null); setOpen(true) }}
+              className="btn-primary btn-sm"
+            >
+              Programar clase
+            </button>
+          </div>
+        ) : (
+          <div className="overflow-x-auto p-4">
+            <table className="data-table">
+              <thead className="sticky top-0 z-10">
+                <tr>
+                  <th className="w-20">Hora</th>
+                  {DIAS.map((dia) => (
+                    <th key={dia} className="text-center" style={{ width: 'calc((100% - 80px) / 6)' }}>
+                      {dia.charAt(0).toUpperCase() + dia.slice(1)}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {horas.map((hora) => (
+                  <tr key={hora}>
+                    <td className="text-xs font-medium text-muted bg-surface-hover">{hora}</td>
+                    {DIAS.map((dia) => {
+                      const c = getClaseEnCelda(dia, hora)
+                      return (
+                        <td key={dia} className="text-center h-20 relative p-1 cursor-pointer hover:bg-accent-soft transition-colors" style={{ border: '1px solid rgb(var(--line-soft))' }}>
+                          {c ? (
+                            <div className="bg-accent-soft border border-accent/30 rounded-lg p-1.5 text-[10px] font-medium text-accent-text leading-tight shadow-sm">
+                              {c.profesor.apellido} - {c.instrumento}
+                            </div>
+                          ) : null}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <div className="relative bg-white p-6 rounded-2xl shadow-2xl border border-[#E5E7EB] w-full max-w-md m-4" onClick={(e) => e.stopPropagation()}>
-            <h2 className="serif text-xl font-bold text-[#111827] mb-5">
-              {editingId ? 'Editar clase' : 'Nueva clase'}
-            </h2>
-            <form onSubmit={guardar} className="space-y-4">
-              <div>
-                <label className="field-label">Profesor</label>
-                <select
-                  className="select-field"
-                  value={form.profesorId}
-                  onChange={(e) => setForm({ ...form, profesorId: e.target.value })}
-                >
-                  <option value="">Seleccionar profesor</option>
-                  {profesores.map((p) => <option key={p.id} value={String(p.id)}>{p.nombre} {p.apellido}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="field-label">Instrumento</label>
-                <input className="input-field" value={form.instrumento} onChange={(e) => setForm({ ...form, instrumento: e.target.value })} required />
-              </div>
-              <div>
-                <label className="field-label">Día</label>
-                <select className="select-field" value={form.diaSemana} onChange={(e) => setForm({ ...form, diaSemana: e.target.value })}>
-                  {DIAS.map((d) => <option key={d} value={d}>{d.charAt(0).toUpperCase() + d.slice(1)}</option>)}
-                </select>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
+        <div className="modal-overlay" onClick={() => setOpen(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="text-lg font-bold tracking-tight">{editingId ? 'Editar clase' : 'Nueva clase'}</h2>
+              <button
+                onClick={() => setOpen(false)}
+                className="p-1.5 text-muted hover:text-ink rounded-lg hover:bg-surface-hover transition-colors"
+                aria-label="Cerrar"
+              >
+                <span className="sr-only">Cerrar</span>
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              <form onSubmit={guardar} className="space-y-4">
                 <div>
-                  <label className="field-label">Hora inicio</label>
-                  <input type="time" className="input-field" value={form.horaInicio} onChange={(e) => setForm({ ...form, horaInicio: e.target.value })} required />
+                  <label className="field-label">Profesor</label>
+                  <select
+                    className="select-field"
+                    value={form.profesorId}
+                    onChange={(e) => setForm({ ...form, profesorId: e.target.value })}
+                  >
+                    <option value="">Seleccionar profesor</option>
+                    {profesores.map((p) => <option key={p.id} value={String(p.id)}>{p.nombre} {p.apellido}</option>)}
+                  </select>
                 </div>
                 <div>
-                  <label className="field-label">Hora fin</label>
-                  <input type="time" className="input-field" value={form.horaFin} onChange={(e) => setForm({ ...form, horaFin: e.target.value })} required />
+                  <label className="field-label">Instrumento</label>
+                  <input className="input-field" value={form.instrumento} onChange={(e) => setForm({ ...form, instrumento: e.target.value })} required />
                 </div>
-              </div>
-              <div>
-                <label className="field-label">Aula</label>
-                <input className="input-field" value={form.aula} onChange={(e) => setForm({ ...form, aula: e.target.value })} />
-              </div>
-              <div>
-                <label className="field-label">Capacidad</label>
-                <input type="number" className="input-field" value={form.capacidad} onChange={(e) => setForm({ ...form, capacidad: e.target.value })} />
-              </div>
-              <div className="flex justify-end gap-3 pt-3 border-t border-[#E5E7EB]">
-                <button type="button" onClick={() => setOpen(false)} className="btn-secondary btn-sm">
-                  Cancelar
-                </button>
-                <button type="submit" className="btn-primary btn-sm">
-                  Guardar
-                </button>
-              </div>
-            </form>
+                <div>
+                  <label className="field-label">Día</label>
+                  <select className="select-field" value={form.diaSemana} onChange={(e) => setForm({ ...form, diaSemana: e.target.value })}>
+                    {DIAS.map((d) => <option key={d} value={d}>{d.charAt(0).toUpperCase() + d.slice(1)}</option>)}
+                  </select>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="field-label">Hora inicio</label>
+                    <input type="time" className="input-field" value={form.horaInicio} onChange={(e) => setForm({ ...form, horaInicio: e.target.value })} required />
+                  </div>
+                  <div>
+                    <label className="field-label">Hora fin</label>
+                    <input type="time" className="input-field" value={form.horaFin} onChange={(e) => setForm({ ...form, horaFin: e.target.value })} required />
+                  </div>
+                </div>
+                <div>
+                  <label className="field-label">Aula</label>
+                  <input className="input-field" value={form.aula} onChange={(e) => setForm({ ...form, aula: e.target.value })} />
+                </div>
+                <div>
+                  <label className="field-label">Capacidad</label>
+                  <input type="number" className="input-field" value={form.capacidad} onChange={(e) => setForm({ ...form, capacidad: e.target.value })} />
+                </div>
+                <div className="modal-footer">
+                  <button type="button" onClick={() => setOpen(false)} className="btn-secondary btn-sm">
+                    Cancelar
+                  </button>
+                  <button type="submit" className="btn-primary btn-sm" disabled={cargando}>
+                    Guardar
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}

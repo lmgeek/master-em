@@ -40,19 +40,19 @@ export default function ReportesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="serif text-2xl font-bold text-[#111827]">Reporte de cierre mensual</h1>
-        <p className="mt-1 text-[#6B7280] text-sm">Ingresos y egresos del periodo seleccionado.</p>
+        <h1 className="text-xl font-bold tracking-tight">Reporte de cierre mensual</h1>
+        <p className="mt-1 text-sm text-muted">Ingresos y egresos del periodo seleccionado.</p>
       </div>
 
       <div className="flex gap-3 items-end">
-        <select value={mes} onChange={(e) => setMes(Number(e.target.value))} className="select-field w-auto max-w-[150px]">
+        <select value={mes} onChange={(e) => setMes(Number(e.target.value))} className="select-field w-auto max-w-[160px]">
           {meses.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
         </select>
         <select value={anio} onChange={(e) => setAnio(Number(e.target.value))} className="select-field w-auto max-w-[120px]">
           {[2024, 2025, 2026, 2027].map((y) => <option key={y} value={y}>{y}</option>)}
         </select>
         <button onClick={generarReporte} disabled={cargando} className="btn-primary">
-          {cargando ? 'Generando...' : 'Generar'}
+          {cargando ? 'Generando…' : 'Generar'}
         </button>
       </div>
 
@@ -60,23 +60,23 @@ export default function ReportesPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="metric-card">
             <span className="metric-label">Ingresos</span>
-            <p className="metric-value text-[#059669]">${reporte.ingresos.toFixed(2)}</p>
+            <p className="metric-value text-success">${reporte.ingresos.toFixed(2)}</p>
           </div>
           <div className="metric-card">
             <span className="metric-label">Egresos (profesores)</span>
-            <p className="metric-value text-[#DC2626]">${reporte.egresos.toFixed(2)}</p>
+            <p className="metric-value text-danger">${reporte.egresos.toFixed(2)}</p>
           </div>
           <div className="metric-card">
             <span className="metric-label">Saldo</span>
-            <p className={`metric-value ${reporte.saldo >= 0 ? 'text-[#059669]' : 'text-[#DC2626]'}`}>${reporte.saldo.toFixed(2)}</p>
+            <p className={`metric-value ${reporte.saldo >= 0 ? 'text-success' : 'text-danger'}`}>${reporte.saldo.toFixed(2)}</p>
           </div>
         </div>
       )}
 
-      {reporte && (
-        <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden shadow-sm mt-4">
-          <div className="p-4 border-b border-[#E5E7EB]">
-            <h2 className="serif text-lg font-bold text-[#111827]">Detalle de pagos</h2>
+      {reporte && reporte.detallePagos.length > 0 && (
+        <div className="card overflow-hidden mt-4">
+          <div className="p-4 border-b border-line">
+            <h2 className="text-lg font-bold tracking-tight">Detalle de pagos</h2>
           </div>
           <table className="data-table">
             <thead>
@@ -93,7 +93,7 @@ export default function ReportesPage() {
                   <td>{p.alumno?.nombre} {p.alumno?.apellido}</td>
                   <td>{p.concepto}</td>
                   <td style={{ textAlign: 'right' }}>${Number(p.monto).toFixed(2)}</td>
-                  <td className="text-xs text-[#6B7280]">{new Date(p.fecha).toLocaleDateString('es-AR')}</td>
+                  <td className="text-xs text-muted">{new Date(p.fecha).toLocaleDateString('es-AR')}</td>
                 </tr>
               ))}
             </tbody>
@@ -101,10 +101,10 @@ export default function ReportesPage() {
         </div>
       )}
 
-      {reporte && (
-        <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden shadow-sm mt-4">
-          <div className="p-4 border-b border-[#E5E7EB]">
-            <h2 className="serif text-lg font-bold text-[#111827]">Pagos a profesores del mes</h2>
+      {reporte && reporte.detallePagosProfesores.length > 0 && (
+        <div className="card overflow-hidden mt-4">
+          <div className="p-4 border-b border-line">
+            <h2 className="text-lg font-bold tracking-tight">Pagos a profesores del mes</h2>
           </div>
           <table className="data-table">
             <thead>
@@ -136,6 +136,14 @@ export default function ReportesPage() {
           </table>
         </div>
       )}
+
+      {!reporte || (reporte.detallePagos.length === 0 && reporte.detallePagosProfesores.length === 0) ? (
+        <div className="empty-state mt-6">
+          <div className="empty-icon">📊</div>
+          <h3>No hay datos para este periodo</h3>
+          <p>Registra pagos y cierres de comisiones para que el reporte tenga información.</p>
+        </div>
+      ) : null}
     </div>
   )
 }

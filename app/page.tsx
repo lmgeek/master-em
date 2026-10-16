@@ -1,36 +1,58 @@
 export default function Dashboard() {
   return (
-    <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Dashboard - Escuela de Música</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <p className="text-sm text-gray-500 mb-1">Alumnos activos</p>
-          <p className="text-2xl font-bold">0</p>
+    <div className="space-y-8">
+      <section className="border-b border-[#CBD5E1] pb-6">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div>
+            <h1 className="serif text-3xl font-semibold text-[#0F172A]">Estado de la escuela</h1>
+            <p className="mt-2 text-[#64748B] max-w-3xl">Resumen de alumnos, profesores, pagos y asistencias del mes actual.</p>
+          </div>
+          <a href="/alumnos" className="btn-primary">
+            Nuevo alumno
+          </a>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <p className="text-sm text-gray-500 mb-1">Profesores</p>
-          <p className="text-2xl font-bold">0</p>
+      </section>
+
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="bg-white p-6 border border-[#CBD5E1] rounded-xl">
+          <span className="label">Alumnos activos</span>
+          <p className="serif text-4xl font-bold text-[#0F172A]">—</p>
+          <p className="mt-2 text-xs text-[#64748B]">Sin registros todavía</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <p className="text-sm text-gray-500 mb-1">Clases programadas</p>
-          <p className="text-2xl font-bold">0</p>
+        <div className="bg-white p-6 border border-[#CBD5E1] rounded-xl">
+          <span className="label">Profesores</span>
+          <p className="serif text-4xl font-bold text-[#0F172A]">—</p>
+          <p className="mt-2 text-xs text-[#64748B]">Canto, Guitarra, Bajo, Batería, Piano, Ukelele</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <p className="text-sm text-gray-500 mb-1">Ingresos del mes</p>
-          <p className="text-2xl font-bold">$0</p>
+        <div className="bg-white p-6 border border-[#CBD5E1] rounded-xl">
+          <span className="label">Ingresos del mes</span>
+          <p className="serif text-4xl font-bold text-[#0F172A]">—</p>
+          <p className="mt-2 text-xs text-[#64748B]">Sin pagos registrados</p>
         </div>
-      </div>
-      <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold mb-4">Acciones rápidas</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <a href="/alumnos" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg text-sm font-medium transition">Gestionar Alumnos</a>
-          <a href="/profesores" className="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg text-sm font-medium transition">Gestionar Profesores</a>
-          <a href="/horarios" className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg text-sm font-medium transition">Plancha Horaria</a>
-          <a href="/pagos" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-lg text-sm font-medium transition">Registrar Pago</a>
-          <a href="/asistencias" className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-3 rounded-lg text-sm font-medium transition">Control de Asistencia</a>
-          <a href="/reportes" className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-3 rounded-lg text-sm font-medium transition">Reportes de Cierre</a>
+      </section>
+
+      <section>
+        <h2 className="serif text-xl font-semibold text-[#0F172A]">Plancha horaria</h2>
+        <p className="text-[#64748B] text-sm max-w-2xl">Organización de clases por profesor y día de la semana.</p>
+        <div className="mt-4 bg-white border border-[#CBD5E1] rounded-xl overflow-hidden">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Profesor</th>
+                <th>Instrumento</th>
+                <th>Día</th>
+                <th>Horario</th>
+                <th>Aula</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colSpan={5} className="text-center py-8 text-[#64748B]">No hay clases programadas todavía.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </div>
+      </section>
     </div>
   )
 }

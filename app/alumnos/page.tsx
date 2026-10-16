@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Plus, Edit, Trash2 } from 'lucide-react'
 
 interface Alumno {
   id: number
@@ -56,76 +55,142 @@ export default function AlumnosPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto py-6 px-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Alumnos</h1>
-        <button onClick={() => { setForm({ nombre: '', apellido: '', email: '', telefono: '', instrumento: '', nivel: '' }); setEditingId(null); setOpen(true) }} className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium">
-          <Plus size={18} /> Nuevo alumno
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <div>
+          <h1 className="serif text-3xl font-semibold text-[#0F172A]">Alumnos</h1>
+          <p className="mt-2 text-[#64748B]">Registro, edición y desactivación de alumnos de la escuela.</p>
+        </div>
+        <button
+          onClick={() => {
+            setForm({ nombre: '', apellido: '', email: '', telefono: '', instrumento: '', nivel: '' })
+            setEditingId(null)
+            setOpen(true)
+          }}
+          className="btn-primary"
+        >
+          Nuevo alumno
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="bg-white border border-[#CBD5E1] rounded-xl overflow-hidden">
+        <table className="data-table">
+          <thead>
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Instrumento</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nivel</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Instrumento</th>
+              <th>Nivel</th>
+              <th style={{ textAlign: 'right' }}>Acciones</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody>
             {alumnos.map((a) => (
-              <tr key={a.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">{a.nombre} {a.apellido}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{a.email}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{a.telefono || '-'}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{a.instrumento || '-'}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{a.nivel || '-'}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                  <button onClick={() => editar(a)} className="text-blue-600 hover:text-blue-800"><Edit size={16} /></button>
-                  <button onClick={() => eliminar(a.id)} className="text-red-600 hover:text-red-800"><Trash2 size={16} /></button>
+              <tr key={a.id}>
+                <td className="font-medium">{a.nombre} {a.apellido}</td>
+                <td>{a.email}</td>
+                <td>{a.telefono || '—'}</td>
+                <td>{a.instrumento || '—'}</td>
+                <td>{a.nivel || '—'}</td>
+                <td style={{ textAlign: 'right' }} className="space-x-2">
+                  <button
+                    onClick={() => editar(a)}
+                    className="text-sm font-medium text-[#0F172A] underline underline-offset-2 hover:text-[#D97706]"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => eliminar(a.id)}
+                    className="text-sm font-medium text-[#DC2626] underline underline-offset-2 hover:text-[#B91C1C]"
+                  >
+                    Desactivar
+                  </button>
                 </td>
               </tr>
             ))}
+            {alumnos.length === 0 && (
+              <tr>
+                <td colSpan={6} className="text-center py-8 text-[#64748B]">
+                  No hay alumnos registrados todavía.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
 
       {open && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" onClick={() => setOpen(false)}>
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 mx-4" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-bold mb-4">{editingId ? 'Editar' : 'Nuevo'} Alumno</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setOpen(false)} />
+          <div className="relative bg-white p-6 rounded-xl shadow-2xl border border-[#CBD5E1] w-full max-w-md m-4" onClick={(e) => e.stopPropagation()}>
+            <h2 className="serif text-xl font-semibold text-[#0F172A] mb-4">
+              {editingId ? 'Editar alumno' : 'Nuevo alumno'}
+            </h2>
             <form onSubmit={guardar} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-                <input className="w-full border rounded px-3 py-2 text-sm" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} required />
+                <label className="label">Nombre</label>
+                <input
+                  className="w-full border border-[#CBD5E1] rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus-ring-[#D97706]"
+                  value={form.nombre}
+                  onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+                  required
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
-                <input className="w-full border rounded px-3 py-2 text-sm" value={form.apellido} onChange={(e) => setForm({ ...form, apellido: e.target.value })} required />
+                <label className="label">Apellido</label>
+                <input
+                  className="w-full border border-[#CBD5E1] rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus-ring-[#D97706]"
+                  value={form.apellido}
+                  onChange={(e) => setForm({ ...form, apellido: e.target.value })}
+                  required
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" className="w-full border rounded px-3 py-2 text-sm" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+                <label className="label">Email</label>
+                <input
+                  type="email"
+                  className="w-full border border-[#CBD5E1] rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus-ring-[#D97706]"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  required
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-                <input className="w-full border rounded px-3 py-2 text-sm" value={form.telefono} onChange={(e) => setForm({ ...form, telefono: e.target.value })} />
+                <label className="label">Teléfono</label>
+                <input
+                  className="w-full border border-[#CBD5E1] rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus-ring-[#D97706]"
+                  value={form.telefono}
+                  onChange={(e) => setForm({ ...form, telefono: e.target.value })}
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Instrumento</label>
-                <input className="w-full border rounded px-3 py-2 text-sm" value={form.instrumento} onChange={(e) => setForm({ ...form, instrumento: e.target.value })} />
+                <label className="label">Instrumento</label>
+                <input
+                  className="w-full border border-[#CBD5E1] rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus-ring-[#D97706]"
+                  value={form.instrumento}
+                  onChange={(e) => setForm({ ...form, instrumento: e.target.value })}
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nivel</label>
-                <input className="w-full border rounded px-3 py-2 text-sm" value={form.nivel} onChange={(e) => setForm({ ...form, nivel: e.target.value })} />
+                <label className="label">Nivel</label>
+                <input
+                  className="w-full border border-[#CBD5E1] rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus-ring-[#D97706]"
+                  value={form.nivel}
+                  onChange={(e) => setForm({ ...form, nivel: e.target.value })}
+                />
               </div>
-              <div className="flex justify-end gap-2 pt-4">
-                <button type="button" onClick={() => setOpen(false)} className="px-4 py-2 border rounded text-gray-700 hover:bg-gray-100 text-sm">Cancelar</button>
-                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Guardar</button>
+              <div className="flex justify-end gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="btn-ghost"
+                >
+                  Cancelar
+                </button>
+                <button type="submit" className="btn-primary">
+                  Guardar
+                </button>
               </div>
             </form>
           </div>
